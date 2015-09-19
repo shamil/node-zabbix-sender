@@ -67,17 +67,17 @@ here are the options defaults:
 
 ### Instance methods
 
-**method `addItem([host], key, value)`**
+`addItem([host], key, value)`
 
 Adds an item to the request payload. The item data won't be sent until the `send` method invoked.
 The `return` value is self instance, so chaining can be used.
 
-**method `clearItems()`**
+`clearItems()`
 
-Clears the previously added items (if any). Mostly used internally, but you can use the method,
+Clears the previously added items (if any). Mostly used internally, but you can use this method,
 if you want to make sure no orphan items are present. The `return` value is self instance, so chaining can be used.
 
-**method `send(callback)`**
+`send(callback)`
 
 Sends all items that were added to the request payload.
 The callback function passes 2 arguments `error` (if any) and `response` from zabbix server (trapper).
