@@ -1,10 +1,10 @@
-**About this library**
+### About this library
 
 The library is an implementation of `zabix_sender` utility, which sends items data to zabbix server
 using the zabbix `trapper` protocol. Because it's a pure NodeJs/javascript implementation, it doesn't
 require the `zabix_sender` utility. So there is no any `child_process` involved!
 
-**Basic usage example**
+### Basic usage example
 
 ```javascript
 var ZabbixSender = require('node-zabbix-sender');
@@ -28,13 +28,13 @@ Sender.send(function(err, res) {
 });
 ```
 
-**Another example, with `addItem` & `send` combined**
+### Another example, with `addItem` & `send` combined
 
 ```javascript
 var ZabbixSender = require('node-zabbix-sender');
 var Sender = new ZabbixSender({host: 'zabbix.example.com'});
 
-// addItem supprots chaining
+// addItem supports chaining
 // Here is an example: add item and & send it
 Sender.addItem('cpu_load', 0.15).send(function(err, res) {
     if (err) {
@@ -46,9 +46,9 @@ Sender.addItem('cpu_load', 0.15).send(function(err, res) {
 });
 ```
 
-**Instance options**
+### Instance options
 
-whenever you create a new instance of zabbix sender, you can pass an options object (e.g `new ZabbixSender(opts)`)
+Whenever you create a new instance of zabbix sender, you can pass an options object (e.g `new ZabbixSender(opts)`)
 here are the options defaults:
 
 ```javascript
@@ -65,16 +65,25 @@ here are the options defaults:
 - `with_timestamps` when you `addItem`, timestamp will be added as well
 - `items_host` a target monitored host in zabbix. used when you don't specify the host when you `addItem`, see example above
 
-**Instance methods**
+### Instance methods
 
-    addItem([host], key, value)
+**method `addItem([host], key, value)`**
 
-adds an item to the request payload. The item data won't be sent until the `send` method invoked.
+Adds an item to the request payload. The item data won't be sent until the `send` method invoked.
+The `return` value is self instance, so chaining can be used.
 
-    send(callback)
+**method `clearItems()`**
 
-sends all items that were added to the request payload. the callback function passes 2 arguments. `error` (if any) and response from zabbix server (trapper)
+Clears the previously added items (if any). Mostly used internally, but you can use the method,
+if you want to make sure no orphan items are present. The `return` value is self instance, so chaining can be used.
 
-**License**
+**method `send(callback)`**
+
+Sends all items that were added to the request payload.
+The callback function passes 2 arguments `error` (if any) and `response` from zabbix server (trapper).
+The `send` method, clears items that were previously added.
+In case of `error`, the previously added items will be kept, for the next `send` invocation.
+
+### License
 
 Licensed under the MIT License. See the LICENSE file for details.
