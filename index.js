@@ -52,7 +52,7 @@ ZabbixSender.prototype.send = function(callback, clear) {
         response = new Buffer(0);
 
     // uncoment when debugging
-    console.log(data.slice(13).toString());
+    //console.log(data.slice(13).toString());
 
     // set socket timout
     client.setTimeout(this.timeout);
