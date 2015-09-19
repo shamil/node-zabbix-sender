@@ -46,7 +46,7 @@ ZabbixSender.prototype.clearItems = function() {
 ZabbixSender.prototype.send = function(callback, clear) {
     // make sure callback is a function
     callback = (typeof callback === 'function') ? callback : function() {};
-    clear    = clear || true;
+    clear    = (typeof clear !== 'undefined') ? clear : true;
 
     var self     = this,
         error    = false,
