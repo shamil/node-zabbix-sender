@@ -91,6 +91,8 @@ ZabbixSender.prototype.send = function(callback) {
 
         // bail out if got wrong response
         if (response.slice(0, 5).toString() !== 'ZBXD\1') {
+            // in case of bad response, put the items back
+            self.items = self.items.concat(items);
             return callback(new Error("got invalid response from server"), {});
         }
 
