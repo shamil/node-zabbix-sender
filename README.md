@@ -81,7 +81,7 @@ if you want to make sure no orphan items are present. The `return` value is self
 
 Sends all items that were added to the request payload.
 The callback function passes 2 arguments `error` (if any) and `response` from zabbix server (trapper).
-The `send` method, clears items that were previously added.
+The `send` method **clears** items that were previously added.
 In case of `error`, the previously added items will be kept, for the next `send` invocation.
 
 ### License
