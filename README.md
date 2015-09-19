@@ -60,24 +60,24 @@ here are the options defaults:
     items_host: require('os').hostname()
 }
 ```
-- `host` and `port` are self-explanatory, the zabbix server host & port
-- `timeout` is a socket timeout in milliseconds, when connecting to the zabbix server
-- `with_timestamps` when you `addItem`, timestamp will be added as well
-- `items_host` a target monitored host in zabbix. used when you don't specify the host when you `addItem`, see example above
+- **`host`** and **`port`** are self-explanatory, the zabbix server host & port
+- **`timeout`** is a socket timeout in milliseconds, when connecting to the zabbix server
+- **`with_timestamps`** when you `addItem`, timestamp will be added as well
+- **`items_host`** a target monitored host in zabbix. used when you don't specify the host when you `addItem`, see example above
 
 ### Instance methods
 
-`addItem([host], key, value)`
+**`addItem([host], key, value)`**
 
 Adds an item to the request payload. The item data won't be sent until the `send` method invoked.
 The `return` value is self instance, so chaining can be used.
 
-`clearItems()`
+**`clearItems()`**
 
 Clears the previously added items (if any). Mostly used internally, but you can use this method,
 if you want to make sure no orphan items are present. The `return` value is self instance, so chaining can be used.
 
-`send(callback)`
+**`send(callback)`**
 
 Sends all items that were added to the request payload.
 The callback function passes 2 arguments `error` (if any) and `response` from zabbix server (trapper).
