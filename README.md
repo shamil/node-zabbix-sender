@@ -27,6 +27,25 @@ Sender.send(function(err, res) {
     console.dir(res);
 });
 ```
+
+**Another example, with `addItem` & `send` combined**
+
+```javascript
+var ZabbixSender = require('node-zabbix-sender');
+var Sender = new ZabbixSender({host: 'zabbix.example.com'});
+
+// addItem supprots chaining
+// Here is an example: add item and & send it
+Sender.addItem('cpu_load', 0.15).send(function(err, res) {
+    if (err) {
+        throw err;
+    }
+
+    // print the response object
+    console.dir(res);
+});
+```
+
 **Instance options**
 
 whenever you create a new instance of zabbix sender, you can pass an options object (e.g `new ZabbixSender(opts)`)

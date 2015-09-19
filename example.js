@@ -1,4 +1,4 @@
-var ZabbixSender = require('node-zabbix-sender');
+var ZabbixSender = require('./index');
 var Sender = new ZabbixSender({host: 'zabbix.example.com'});
 
 // Add items to request

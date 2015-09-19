@@ -1,6 +1,6 @@
 {
   "name": "node-zabbix-sender",
-  "version": "1.0.2",
+  "version": "1.0.3",
   "description": "A zabbix_sender implementation, to send zabbix item(s) using the zabbix trapper protocol.",
   "main": "index.js",
   "scripts": {

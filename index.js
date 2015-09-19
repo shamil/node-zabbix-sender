@@ -10,14 +10,14 @@ var ZabbixSender = module.exports = function(opts) {
     this.with_timestamps = opts.with_timestamps || false;
     this.items_host = opts.items_host || hostname;
 
-    // our items array
-    this.items = [];
+    // prepare items array
+    this.clearItems();
 }
 
 ZabbixSender.prototype.addItem = function(host, key, value) {
     if (arguments.length != 3) {
         if (arguments.length < 2) {
-            throw new Error('addItem requires 2 or 3 arguments')
+            throw new Error('addItem requires 2 or 3 arguments');
         }
 
         // if just 2 args provided
@@ -35,6 +35,8 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
     if (this.with_timestamps) {
         this.items[length - 1].clock = Date.now() / 1000 | 0;
     }
+
+    return this;
 }
 
 ZabbixSender.prototype.clearItems = function() {
@@ -44,6 +46,7 @@ ZabbixSender.prototype.clearItems = function() {
 ZabbixSender.prototype.send = function(callback, clear) {
     // make sure callback is a function
     callback = (typeof callback === 'function') ? callback : function() {};
+    clear    = clear || true;
 
     var self     = this,
         error    = false,
