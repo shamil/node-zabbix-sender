@@ -1,6 +1,5 @@
-var ZabbixSender = require('./index.js');
-var Sender = new ZabbixSender({host: '10.121.202.100'});
-//var Sender = new ZabbixSender({host: 'zabbix.example.com'});
+var ZabbixSender = require('node-zabbix-sender');
+var Sender = new ZabbixSender({host: 'zabbix.example.com'});
 
 // Add items to request
 Sender.addItem('webserver', 'httpd.running', 0);
@@ -18,3 +17,4 @@ Sender.send(function(err, res) {
     // print the response object
     console.dir(res);
 });
+
