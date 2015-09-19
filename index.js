@@ -78,14 +78,14 @@ ZabbixSender.prototype.send = function(callback) {
     });
 
     client.on('error', function(err) {
-        // in case of error, put the items back
-        self.items = self.items.concat(items);
         error = err;
     });
 
     client.on('close', function() {
         // bail out on any error
         if (error) {
+            // in case of error, put the items back
+            self.items = self.items.concat(items);
             return callback(error, {});
         }
 
