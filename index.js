@@ -15,7 +15,7 @@ var ZabbixSender = module.exports = function(opts) {
 }
 
 ZabbixSender.prototype.addItem = function(host, key, value) {
-    if (arguments.length != 3) {
+    if (arguments.length < 3) {
         if (arguments.length < 2) {
             throw new Error('addItem requires 2 or 3 arguments');
         }
@@ -42,6 +42,10 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
 ZabbixSender.prototype.clearItems = function() {
     this.items = [];
     return this;
+}
+
+ZabbixSender.prototype.countItems = function() {
+    return this.items.length;
 }
 
 ZabbixSender.prototype.send = function(callback) {
@@ -97,7 +101,7 @@ ZabbixSender.prototype.send = function(callback) {
         }
 
         // all clear, return the result
-        callback(null, JSON.parse(response.slice(13)));
+        callback(null, JSON.parse(response.slice(13)), items);
     });
 }
 

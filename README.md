@@ -77,11 +77,15 @@ The `return` value is self instance, so chaining can be used.
 Clears the previously added items (if any). Mostly used internally, but you can use this method,
 if you want to make sure no orphan items are present. The `return` value is self instance, so chaining can be used.
 
+**`countItems()`**
+
+Just returns the number of unsent items.
+
 **`send(callback)`**
 
 Sends all items that were added to the request payload.
-The callback function passes 2 arguments `error` (if any) and `response` from zabbix server (trapper).
-The `send` method **clears** items that were previously added.
+The callback function passes 3 arguments `error` (if any), the `response` from zabbix server (trapper),
+and the `items` array of item objects. The `send` method **clears** items that were previously added.
 In case of `error`, the previously added items will be kept, for the next `send` invocation.
 
 ### License
