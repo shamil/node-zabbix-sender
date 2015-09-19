@@ -41,23 +41,27 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
 
 ZabbixSender.prototype.clearItems = function() {
     this.items = [];
+    return this;
 }
 
-ZabbixSender.prototype.send = function(callback, clear) {
+ZabbixSender.prototype.send = function(callback) {
     // make sure callback is a function
     callback = (typeof callback === 'function') ? callback : function() {};
-    clear    = (typeof clear !== 'undefined') ? clear : true;
 
     var self     = this,
         error    = false,
-        data     = prepareData(this.items, this.with_timestamps),
+        items    = this.items,
+        data     = prepareData(items, this.with_timestamps),
         client   = new Net.Socket(),
         response = new Buffer(0);
 
     // uncoment when debugging
     //console.log(data.slice(13).toString());
 
-    // set socket timout
+    // reset items array
+    this.clearItems();
+
+    // set socket timeout
     client.setTimeout(this.timeout);
 
     client.connect(this.port, this.host, function() {
@@ -74,6 +78,8 @@ ZabbixSender.prototype.send = function(callback, clear) {
     });
 
     client.on('error', function(err) {
+        // in case of error, put the items back
+        self.items = self.items.concat(items);
         error = err;
     });
 
@@ -89,7 +95,6 @@ ZabbixSender.prototype.send = function(callback, clear) {
         }
 
         // all clear, return the result
-        clear && self.clearItems();
         callback(null, JSON.parse(response.slice(13)));
     });
 }
