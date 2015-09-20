@@ -1,8 +1,8 @@
 ### About this library
 
-The library is an implementation of `zabix_sender` utility, which sends items data to zabbix server
+The library is an implementation of `zabbix_sender` utility, which sends items data to zabbix server
 using the zabbix `trapper` protocol. Because the library is a pure Node.js/Javascript implementation, it doesn't
-require invocation of `zabix_sender` utility. So there is no any `child_process` involved!
+require invocation of `zabbix_sender` utility. So there is no any `child_process` involved!
 
 ### Basic usage example
 
