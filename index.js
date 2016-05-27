@@ -26,7 +26,7 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
         host  = this.items_host;
     }
 
-    length = this.items.push({
+    var length = this.items.push({
         host:  host,
         key:   key,
         value: value
@@ -94,7 +94,7 @@ ZabbixSender.prototype.send = function(callback) {
         }
 
         // bail out if got wrong response
-        if (response.slice(0, 5).toString() !== 'ZBXD\1') {
+        if (response.slice(0, 5).toString() !== 'ZBXD\x01') {
             // in case of bad response, put the items back
             self.items = self.items.concat(items);
             return callback(new Error("got invalid response from server"), {});
@@ -119,7 +119,7 @@ function prepareData(items, with_timestamps) {
     var payload = new Buffer(JSON.stringify(data), 'utf8'),
         header  = new Buffer(5 + 4); // ZBXD\1 + packed payload.length
 
-    header.write('ZBXD\1');
+    header.write('ZBXD\x01');
     header.writeInt32LE(payload.length, 5);
-    return Buffer.concat([header, new Buffer('\0\0\0\0'), payload]);
+    return Buffer.concat([header, new Buffer('\x00\x00\x00\x00'), payload]);
 }
