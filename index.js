@@ -14,13 +14,14 @@ var ZabbixSender = module.exports = function(opts) {
     this.clearItems();
 }
 
-ZabbixSender.prototype.addItem = function(host, key, value, ts = false) {
+ZabbixSender.prototype.addItem = function(host, key, value = false, ts = false) {
     if (arguments.length < 3) {
         if (arguments.length < 2) {
             throw new Error('addItem requires 2 to 4 arguments');
         }
 
         // if just 2 args provided
+        ts    = value;
         value = key;
         key   = host;
         host  = this.items_host;
@@ -33,7 +34,9 @@ ZabbixSender.prototype.addItem = function(host, key, value, ts = false) {
     });
 
     if (ts !== false) {
-        this.items[length - 1].clock = parseFloat(ts);
+        // add time stamp for every items and also use nanoseconds
+        this.items[length - 1].clock = parseInt(ts);
+        this.items[length - 1].ns = parseInt(((parseFloat(ts)*1000000000)+"").substr((this.items[length - 1].clock+"").length));	// 1 sec = 1*10^9 nanoseconds
         this.with_timestamps = true;
     } else if (this.with_timestamps) {
         this.items[length - 1].clock = Date.now() / 1000 | 0;
