@@ -14,10 +14,10 @@ var ZabbixSender = module.exports = function(opts) {
     this.clearItems();
 }
 
-ZabbixSender.prototype.addItem = function(host, key, value) {
+ZabbixSender.prototype.addItem = function(host, key, value, ts = false) {
     if (arguments.length < 3) {
         if (arguments.length < 2) {
-            throw new Error('addItem requires 2 or 3 arguments');
+            throw new Error('addItem requires 2 to 4 arguments');
         }
 
         // if just 2 args provided
@@ -32,7 +32,10 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
         value: value
     });
 
-    if (this.with_timestamps) {
+    if (ts !== false) {
+        this.items[length - 1].clock = parseFloat(ts);
+        this.with_timestamps = true;
+    } else if (this.with_timestamps) {
         this.items[length - 1].clock = Date.now() / 1000 | 0;
     }
 

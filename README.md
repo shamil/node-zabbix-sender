@@ -17,6 +17,9 @@ Sender.addItem('dbserver', 'mysql.ping', 1);
 // Add item with default host
 Sender.addItem('httpd.logs.size', 1024);
 
+// Add item with timestamp
+Sender.addItem('myserver','httpd.logs.size', 1024, 1519161769);
+
 // Send the items to zabbix trapper
 Sender.send(function(err, res) {
     if (err) {
