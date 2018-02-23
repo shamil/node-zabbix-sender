@@ -7,7 +7,8 @@ var ZabbixSender = module.exports = function(opts) {
     this.host = opts.host || 'localhost';
     this.port = parseInt(opts.port) || 10051;
     this.timeout = parseInt(opts.timeout) || 5000;
-    this.with_timestamps = opts.with_timestamps || false;
+    this.with_ns = opts.with_ns || false;
+    this.with_timestamps = this.with_ns || opts.with_timestamps || false;
     this.items_host = opts.items_host || hostname;
 
     // prepare items array
@@ -33,7 +34,12 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
     });
 
     if (this.with_timestamps) {
-        this.items[length - 1].clock = Date.now() / 1000 | 0;
+        var ts = Date.now() / 1000;
+        this.items[length - 1].clock = ts | 0;
+
+        if (this.with_ns) {
+            this.items[length - 1].ns = (ts % 1) * 1000 * 1000000 | 0;
+        }
     }
 
     return this;
@@ -55,7 +61,7 @@ ZabbixSender.prototype.send = function(callback) {
     var self     = this,
         error    = false,
         items    = this.items,
-        data     = prepareData(items, this.with_timestamps),
+        data     = prepareData(items, this.with_timestamps, this.with_ns),
         client   = new Net.Socket(),
         response = new Buffer(0);
 
@@ -106,14 +112,19 @@ ZabbixSender.prototype.send = function(callback) {
 }
 
 // takes items array and prepares payload for sending
-function prepareData(items, with_timestamps) {
+function prepareData(items, with_timestamps, with_ns) {
     var data = {
         request: 'sender data',
         data: items
     };
 
     if (with_timestamps) {
-        data.clock = Date.now() / 1000 | 0;
+        var ts = Date.now() / 1000;
+        data.clock = ts | 0;
+
+        if (with_ns) {
+            data.ns = (ts % 1) * 1000 * 1000000 | 0;
+        }
     }
 
     var payload = new Buffer(JSON.stringify(data), 'utf8'),
