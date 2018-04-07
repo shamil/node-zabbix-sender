@@ -56,6 +56,7 @@ here are the options defaults:
     host: 'localhost',
     port: 10051,
     timeout: 5000,
+    with_ns: false,
     with_timestamps: false,
     items_host: require('os').hostname()
 }
@@ -63,6 +64,7 @@ here are the options defaults:
 - **`host`** and **`port`** are self-explanatory, the zabbix server host & port
 - **`timeout`** is a socket timeout in milliseconds, when connecting to the zabbix server
 - **`with_timestamps`** when you `addItem`, timestamp will be added as well
+- **`with_ns`** implies `with_timestamps`, nanoseconds portion of the timestamp seconds will be added to the item
 - **`items_host`** a target monitored host in zabbix. used when you don't specify the host when you `addItem`, see example above
 
 ### Instance methods
@@ -87,6 +89,11 @@ Sends all items that were added to the request payload.
 The callback function passes 3 arguments `error` (if any), the `response` from zabbix server (trapper),
 and the `items` array of item objects. The `send` method **clears** items that were previously added.
 In case of `error`, the previously added items will be kept, for the next `send` invocation.
+
+### Protocol References
+
+- https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/3.4
+- https://www.zabbix.org/wiki/Docs/protocols/zabbix_agent/3.4
 
 ### License
 
