@@ -15,6 +15,31 @@ var ZabbixSender = module.exports = function(opts) {
     this.clearItems();
 }
 
+/**
+ * Add data as {host: {itemName: value, ...}, ...}
+ * Or {itemName: value, ...}(common items_host will be used)
+ */
+ZabbixSender.prototype.addData = function(data){
+    if(!(data instanceof Object)){
+        throw new Error('data should be of type object');
+    }
+    Object.keys(data).forEach(key => {
+        if(data[key] instanceof Object){
+            Object.keys(data[key]).forEach(itemName => {
+                this.addItem(key, itemName, data[key][itemName]);
+            });
+        }
+        else if(['string', 'number', 'bigint', 'boolean'].indexOf(typeof(data[key])) != -1){
+            this.addItem(key, data[key]);
+        }
+        else{
+            throw new Error('data items should be objects or primitive types')
+        }
+    });
+
+    return this;
+}
+
 ZabbixSender.prototype.addItem = function(host, key, value) {
     if (arguments.length < 3) {
         if (arguments.length < 2) {

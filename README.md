@@ -69,6 +69,12 @@ here are the options defaults:
 
 ### Instance methods
 
+**`addData({host: {itemName: value}}|{itemName:value})`**
+
+Adds an object with items, where keys are host and item name. 
+Acts the same as method below.
+The `return` value is self instance, so chaining can be used.
+
 **`addItem([host], key, value)`**
 
 Adds an item to the request payload. The item data won't be sent until the `send` method invoked.

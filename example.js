@@ -8,6 +8,11 @@ Sender.addItem('dbserver', 'mysql.ping', 1);
 // Add item with default host
 Sender.addItem('httpd.logs.size', 1024);
 
+Sender.addData({
+    webserver:{'httpd.runnning': 0},
+    dbserver:{'mysql.ping': 1},
+});
+Sender.addData({'httpd.logs.size': 1024})
 // Send the items to zabbix trapper
 Sender.send(function(err, res) {
     if (err) {
