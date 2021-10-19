@@ -17,6 +17,15 @@ Sender.addItem('dbserver', 'mysql.ping', 1);
 // Add item with default host
 Sender.addItem('httpd.logs.size', 1024);
 
+// Add item with timestamp 
+Sender.addItem('webserver', 'httpd.running', 1, 1634645976);
+
+// Add item with timestamp and nanoseconds
+Sender.addItem('dbserver', 'mysql.ping', 0, 1634645976, 758000000);
+
+// Add item with default host with timestamp. The host has to be set to an empty string in this case.
+Sender.addItem('','httpd.logs.size', 1024, 1634645976);
+
 // Send the items to zabbix trapper
 Sender.send(function(err, res) {
     if (err) {
@@ -69,9 +78,11 @@ here are the options defaults:
 
 ### Instance methods
 
-**`addItem([host], key, value)`**
+**`addItem([host], key, value, [timestamp], [ns])`**
 
-Adds an item to the request payload. The item data won't be sent until the `send` method invoked.
+Adds an item to the request payload. `ns` can only be set if `host` and `timestamp` are also set.
+If a custom timestamp is set, `with_timestamps` and `with_ns` are ignored. 
+If `host` is an empty string `items_host` is used. The item data won't be sent until the `send` method invoked.
 The `return` value is self instance, so chaining can be used.
 
 **`clearItems()`**
@@ -92,8 +103,8 @@ In case of `error`, the previously added items will be kept, for the next `send`
 
 ### Protocol References
 
-- https://www.zabbix.org/wiki/Docs/protocols/zabbix_sender/3.4
-- https://www.zabbix.org/wiki/Docs/protocols/zabbix_agent/3.4
+- https://www.zabbix.com/documentation/6.0/manual/appendix/items/trapper
+- https://www.zabbix.com/documentation/6.0/manual/appendix/protocols/header_datalen
 
 ### License
 
