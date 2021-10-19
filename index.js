@@ -15,10 +15,10 @@ var ZabbixSender = module.exports = function(opts) {
     this.clearItems();
 }
 
-ZabbixSender.prototype.addItem = function(host, key, value) {
+ZabbixSender.prototype.addItem = function(host, key, value, timestamp, ns) {
     if (arguments.length < 3) {
         if (arguments.length < 2) {
-            throw new Error('addItem requires 2 or 3 arguments');
+            throw new Error('addItem requires at least 2 arguments');
         }
 
         // if just 2 args provided
@@ -27,18 +27,29 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
         host  = this.items_host;
     }
 
+    if (host === "")
+        host = this.items_host;
+
     var length = this.items.push({
         host:  host,
         key:   key,
         value: value
     });
 
-    if (this.with_timestamps) {
-        var ts = Date.now() / 1000;
-        this.items[length - 1].clock = ts | 0;
+    // we don't care about configuration if time or ns is set.
+    if (arguments.length > 3) {
+        this.items[length - 1].clock = timestamp
+        if (arguments.length > 4) {
+            this.items[length - 1].ns = ns;
+        }
+    } else {
+        if (this.with_timestamps) {
+            var ts = Date.now() / 1000;
+            this.items[length - 1].clock = ts | 0;
 
-        if (this.with_ns) {
-            this.items[length - 1].ns = (ts % 1) * 1000 * 1000000 | 0;
+            if (this.with_ns) {
+                this.items[length - 1].ns = (ts % 1) * 1000 * 1000000 | 0;
+            }
         }
     }
 
@@ -63,7 +74,7 @@ ZabbixSender.prototype.send = function(callback) {
         items    = this.items,
         data     = prepareData(items, this.with_timestamps, this.with_ns),
         client   = new Net.Socket(),
-        response = new Buffer(0);
+        response = Buffer.alloc(0);
 
     // uncoment when debugging
     //console.log(data.slice(13).toString());
@@ -127,10 +138,10 @@ function prepareData(items, with_timestamps, with_ns) {
         }
     }
 
-    var payload = new Buffer(JSON.stringify(data), 'utf8'),
-        header  = new Buffer(5 + 4); // ZBXD\1 + packed payload.length
+    var payload = Buffer.from(JSON.stringify(data), 'utf8'),
+        header  = Buffer.alloc(5 + 4); // ZBXD\1 + packed payload.length
 
     header.write('ZBXD\x01');
     header.writeInt32LE(payload.length, 5);
-    return Buffer.concat([header, new Buffer('\x00\x00\x00\x00'), payload]);
+    return Buffer.concat([header, Buffer.from('\x00\x00\x00\x00'), payload]);
 }
