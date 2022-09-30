@@ -170,10 +170,6 @@ function prepareData(items, with_timestamps, with_ns) {
         var ts = Date.now() / 1000;
         data.clock = ts | 0;
 
-    if (with_timestamps) {
-        var ts = Date.now() / 1000;
-        data.clock = ts | 0;
-
         if (with_ns) {
             data.ns = (ts % 1) * 1000 * 1000000 | 0;
         }
