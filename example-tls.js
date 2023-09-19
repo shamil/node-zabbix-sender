@@ -1,5 +1,13 @@
 var ZabbixSender = require('./index');
-var Sender = new ZabbixSender({host: 'zabbix.example.com'});
+var Sender = new ZabbixSender({
+    host: 'zabbix.example.com',
+    key_file_path: 'private-key.pem',
+    cert_file_path: 'public-cert.pem',
+    // optional socket_options
+    // socket_options: {
+    //     rejectUnauthorized: false,
+    // }
+});
 
 // Add items to request
 Sender.addItem('webserver', 'httpd.running', 0);

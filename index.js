@@ -1,15 +1,27 @@
-var Net      = require('net'),
-    hostname = require("os").hostname();
+var tls = require('tls');
+var fs = require('fs');
+var hostname = require("os").hostname();
+var net = require('net');
 
 var ZabbixSender = module.exports = function(opts) {
     opts = (typeof opts !== 'undefined') ? opts : {};
 
-    this.host = opts.host || 'localhost';
-    this.port = parseInt(opts.port) || 10051;
     this.timeout = parseInt(opts.timeout) || 5000;
     this.with_ns = opts.with_ns || false;
     this.with_timestamps = this.with_ns || opts.with_timestamps || false;
     this.items_host = opts.items_host || hostname;
+    this.items = [];
+    this.socket_options = opts.socket_options || {};
+    this.socket_options.host = opts.host || 'localhost';
+    this.socket_options.port = parseInt(opts.port) || 10051;
+
+    if (typeof opts.key_file_path !== 'undefined') {
+        this.socket_options.key = fs.readFileSync(opts.key_file_path);
+    }
+
+    if (typeof opts.cert_file_path !== 'undefined') {
+        this.socket_options.cert = fs.readFileSync(opts.cert_file_path);
+    }
 
     // prepare items array
     this.clearItems();
@@ -62,11 +74,15 @@ ZabbixSender.prototype.send = function(callback) {
         error    = false,
         items    = this.items,
         data     = prepareData(items, this.with_timestamps, this.with_ns),
-        client   = new Net.Socket(),
         response = new Buffer(0);
 
     // uncoment when debugging
     //console.log(data.slice(13).toString());
+    if (typeof this.socket_options.key !== 'undefined' && typeof this.socket_options.cert !== 'undefined') {
+        var client = new tls.TLSSocket();
+    } else {
+        var client = new net.Socket();
+    }
 
     // reset items array
     this.clearItems();
@@ -74,7 +90,7 @@ ZabbixSender.prototype.send = function(callback) {
     // set socket timeout
     client.setTimeout(this.timeout);
 
-    client.connect(this.port, this.host, function() {
+    client.connect(this.socket_options, function() {
         client.write(data);
     });
 
