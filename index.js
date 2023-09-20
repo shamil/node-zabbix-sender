@@ -63,7 +63,7 @@ ZabbixSender.prototype.send = function(callback) {
         items    = this.items,
         data     = prepareData(items, this.with_timestamps, this.with_ns),
         client   = new Net.Socket(),
-        response = new Buffer(0);
+        response = Buffer.from([]);
 
     // uncoment when debugging
     //console.log(data.slice(13).toString());
@@ -127,10 +127,10 @@ function prepareData(items, with_timestamps, with_ns) {
         }
     }
 
-    var payload = new Buffer(JSON.stringify(data), 'utf8'),
-        header  = new Buffer(5 + 4); // ZBXD\1 + packed payload.length
+    var payload = Buffer.from(JSON.stringify(data), 'utf8'),
+        header  = Buffer.alloc(5 + 4); // ZBXD\1 + packed payload.length
 
     header.write('ZBXD\x01');
     header.writeInt32LE(payload.length, 5);
-    return Buffer.concat([header, new Buffer('\x00\x00\x00\x00'), payload]);
+    return Buffer.concat([header, Buffer.from('\x00\x00\x00\x00'), payload]);
 }
