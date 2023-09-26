@@ -7,6 +7,7 @@ var ZabbixSender = module.exports = function(opts) {
     this.host = opts.host || 'localhost';
     this.port = parseInt(opts.port) || 10051;
     this.timeout = parseInt(opts.timeout) || 5000;
+    this.with_custom_timestamps = opts.with_custom_timestamps || false;
     this.with_ns = opts.with_ns || false;
     this.with_timestamps = this.with_ns || opts.with_timestamps || false;
     this.items_host = opts.items_host || hostname;
@@ -15,16 +16,49 @@ var ZabbixSender = module.exports = function(opts) {
     this.clearItems();
 }
 
-ZabbixSender.prototype.addItem = function(host, key, value) {
-    if (arguments.length < 3) {
-        if (arguments.length < 2) {
-            throw new Error('addItem requires 2 or 3 arguments');
+ZabbixSender.prototype.addItem = function(host, key, value, custom_ts, custom_ns) {
+    
+    if (this.with_custom_timestamps) {
+        if (this.with_ns) {
+            if (arguments.length < 5) {
+                if (arguments.length < 4) {
+                    throw new Error('addItem with custom timestamp and ns requires 4 or 5 arguments');
+                }
+        
+                // if just 4 args provided
+                value = key;
+                key   = host;
+                ts    = value;
+                ns    = ts;
+                host  = this.items_host;
+            }
         }
-
-        // if just 2 args provided
-        value = key;
-        key   = host;
-        host  = this.items_host;
+        else {
+            if (arguments.length < 4) {
+                if (arguments.length < 3) {
+                    throw new Error('addItem with custom timestamp requires 3 or 4 arguments');
+                }
+        
+                // if just 4 args provided
+                value = key;
+                key   = host;
+                ts    = value;
+                host  = this.items_host;
+            }
+        }
+    
+    }
+    else {
+        if (arguments.length < 3) {
+            if (arguments.length < 2) {
+                throw new Error('addItem requires 2 or 3 arguments');
+            }
+    
+            // if just 2 args provided
+            value = key;
+            key   = host;
+            host  = this.items_host;
+        }
     }
 
     var length = this.items.push({
@@ -33,7 +67,16 @@ ZabbixSender.prototype.addItem = function(host, key, value) {
         value: value
     });
 
-    if (this.with_timestamps) {
+
+    if (this.with_custom_timestamps) {
+        this.items[length - 1].clock = custom_ts | 0;
+
+        if (this.with_ns) {
+            this.items[length - 1].ns = custom_ns | 0;
+        }
+        
+    }
+    else if (this.with_timestamps) {
         var ts = Date.now() / 1000;
         this.items[length - 1].clock = ts | 0;
 
@@ -93,6 +136,11 @@ ZabbixSender.prototype.send = function(callback) {
 
     client.on('close', function() {
         // bail out on any error
+
+        // uncoment when debugging
+        // console.log(JSON.parse(response.slice(13)));
+        // console.log(items)
+
         if (error) {
             // in case of error, put the items back
             self.items = self.items.concat(items);
